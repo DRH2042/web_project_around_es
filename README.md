@@ -1,20 +1,33 @@
 # Tripleten web_project_around_es
 
+# SPRINT 8
+
 Proyecto del bootcamp de Desarrollo Web de TripleTen.  
-Es una página donde se muestran tarjetas con fotos de lugares en los EE.UU.
+Página interactiva con tarjetas de lugares en EE. UU., donde el usuario puede editar su perfil y gestionar tarjetas dinámicamente.
 
-En esta etapa (Sprint 8 – Etapa 1) se hizo:
+---
 
-- Creación de la carpeta `scripts` y del archivo `scripts/index.js`.
-- Conexión del script en `index.html`.
-- Definición del array `initialCards` con seis tarjetas (name + link).
-- Uso de `initialCards.forEach()` para mostrar los nombres de las tarjetas en la consola.
+## Funcionalidades
+
+- **Perfil**
+
+  - Popup para editar nombre y descripción.
+  - Los datos se rellenan automáticamente y se actualizan sin recargar la página.
+
+- **Tarjetas**
+  - Tarjetas iniciales generadas desde el array `initialCards` usando un `<template>`.
+  - Posibilidad de agregar nuevas tarjetas desde un popup (“Nuevo lugar”), que se insertan al inicio de la lista.
+  - Botón “Me gusta” en cada tarjeta (cambia de estado al hacer clic).
+  - Botón de eliminar que remueve la tarjeta del DOM.
+  - Al hacer clic en la imagen, se abre un popup con la foto ampliada y su título.
+
+---
 
 ## Tecnologías
 
-- HTML
-- CSS
-- JavaScript
+- HTML5
+- CSS3 (BEM)
+- JavaScript (manipulación del DOM, eventos, templates)
 
 ## Autor
 

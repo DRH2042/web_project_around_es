@@ -1,7 +1,6 @@
 // scripts/index.js
-// scripts/index.js
 
-// 1. Array de tarjetas iniciales
+// --- Tarjetas iniciales ---
 const initialCards = [
   {
     name: "Valle de Yosemite",
@@ -29,91 +28,155 @@ const initialCards = [
   },
 ];
 
-// 2. Mensajes para verificar que todo está bien
-console.log("scripts/index.js conectado correctamente ✅");
-console.log("initialCards:", initialCards);
-console.log("Número de tarjetas iniciales:", initialCards.length);
+console.log("scripts/index.js conectado");
 
-// 3. Recorrer el array e imprimir solo los nombres en consola
-initialCards.forEach((card) => {
-  console.log(card.name);
-});
+// --- Selección general de tarjetas ---
+const cardsContainer = document.querySelector(".cards__list");
+const cardTemplate = document
+  .querySelector("#card-template")
+  .content.querySelector(".card");
 
-// 4.  Elementos para el cuadro emergente "Editar perfil"
+// --- Elementos del perfil y popup "Editar perfil" ---
+const profileName = document.querySelector(".profile__title");
+const profileDescription = document.querySelector(".profile__description");
 
-// Botón "Editar perfil"
 const editProfileButton = document.querySelector(".profile__edit-button");
-
-// Modal de "Editar perfil" (el popup con id="edit-popup")
 const editProfileModal = document.querySelector("#edit-popup");
-
-// Botón de cerrar (la X) dentro del modal
 const closeEditProfileButton = editProfileModal.querySelector(".popup__close");
 
-console.log("Botón Editar perfil:", editProfileButton);
-console.log("Modal Editar perfil:", editProfileModal);
-console.log("Botón Cerrar del modal:", closeEditProfileButton);
-
-// 5. Funciones reutilizables para abrir y cerrar cualquier modal
-function openModal(modal) {
-  modal.classList.add("popup_is-opened");
-  console.log("Abriendo modal:", modal);
-}
-
-function closeModal(modal) {
-  modal.classList.remove("popup_is-opened");
-  console.log("Cerrando modal:", modal);
-}
-
-// 6. Escuchar los clics en los botones para abrir/cerrar el modal
-
-// Abrir el modal cuando se hace clic en "Editar perfil"
-editProfileButton.addEventListener("click", function () {
-  // Antes de abrir el modal, copiar los valores actuales del perfil a los inputs
-  nameInput.value = profileName.textContent;
-  descriptionInput.value = profileDescription.textContent;
-
-  openModal(editProfileModal);
-});
-
-// Cerrar el modal cuando se hace clic en la X
-closeEditProfileButton.addEventListener("click", function () {
-  closeModal(editProfileModal);
-});
-
-// 7. Elementos del perfil en la página
-const profileName = document.querySelector(".profile__title"); // "Jacques Cousteau"
-const profileDescription = document.querySelector(".profile__description"); // "Explorador"
-
-// 8. Inputs dentro del popup "Editar perfil"
 const nameInput = editProfileModal.querySelector(".popup__input_type_name");
 const descriptionInput = editProfileModal.querySelector(
   ".popup__input_type_description"
 );
-
-console.log("Nombre en el perfil:", profileName.textContent);
-console.log("Descripción en el perfil:", profileDescription.textContent);
-console.log("Input nombre:", nameInput);
-console.log("Input descripción:", descriptionInput);
-
-// 9. Formulario dentro del popup "Editar perfil"
 const profileForm = editProfileModal.querySelector(".popup__form");
 
-console.log("Formulario de edición de perfil:", profileForm);
+// --- Popup "Agregar tarjeta" ---
+const addCardButton = document.querySelector(".profile__add-button");
+const newCardPopup = document.querySelector("#new-card-popup");
+const closeNewCardButton = newCardPopup.querySelector(".popup__close");
+const newCardForm = newCardPopup.querySelector("#new-card-form");
+const cardNameInput = newCardPopup.querySelector(
+  ".popup__input_type_card-name"
+);
+const cardLinkInput = newCardPopup.querySelector(".popup__input_type_url");
 
-// 10. Manejar el envío del formulario de edición de perfil
-// Handler para el envío del formulario de edición de perfil
+// --- Popup de imagen grande ---
+const imagePopup = document.querySelector("#image-popup");
+const imagePopupImage = imagePopup.querySelector(".popup__image");
+const imagePopupCaption = imagePopup.querySelector(".popup__caption");
+const closeImagePopupButton = imagePopup.querySelector(".popup__close");
+
+// --- Funciones genéricas para popups ---
+function openModal(modal) {
+  modal.classList.add("popup_is-opened");
+}
+
+function closeModal(modal) {
+  modal.classList.remove("popup_is-opened");
+}
+
+// --- Funciones relacionadas con tarjetas ---
+
+// Crea una tarjeta a partir de name y link
+function getCardElement(
+  name = "Sin título",
+  link = "./images/placeholder.jpg"
+) {
+  const cardElement = cardTemplate.cloneNode(true);
+
+  const cardImage = cardElement.querySelector(".card__image");
+  const cardTitle = cardElement.querySelector(".card__title");
+  const likeButton = cardElement.querySelector(".card__like-button");
+  const deleteButton = cardElement.querySelector(".card__delete-button");
+
+  cardTitle.textContent = name;
+  cardImage.src = link;
+  cardImage.alt = name;
+
+  // Me gusta
+  likeButton.addEventListener("click", function () {
+    likeButton.classList.toggle("card__like-button_is-active");
+  });
+
+  // Eliminar tarjeta
+  deleteButton.addEventListener("click", function () {
+    cardElement.remove();
+  });
+
+  // Abrir imagen grande
+  cardImage.addEventListener("click", function () {
+    imagePopupImage.src = link;
+    imagePopupImage.alt = name;
+    imagePopupCaption.textContent = name;
+    openModal(imagePopup);
+  });
+
+  return cardElement;
+}
+
+// Inserta una tarjeta en el contenedor (al inicio)
+function renderCard(name, link, container) {
+  const cardElement = getCardElement(name, link);
+  container.prepend(cardElement);
+}
+
+// Renderizar tarjetas iniciales
+initialCards.forEach((card) => {
+  renderCard(card.name, card.link, cardsContainer);
+});
+
+// --- Lógica del popup "Editar perfil" ---
+
+// Abrir popup con los datos actuales
+editProfileButton.addEventListener("click", function () {
+  nameInput.value = profileName.textContent;
+  descriptionInput.value = profileDescription.textContent;
+  openModal(editProfileModal);
+});
+
+// Cerrar popup de perfil
+closeEditProfileButton.addEventListener("click", function () {
+  closeModal(editProfileModal);
+});
+
+// Guardar cambios del perfil
 function handleProfileFormSubmit(evt) {
-  // 1. Evitar que el formulario recargue la página
   evt.preventDefault();
-
-  // 2. Actualizar los elementos del perfil con los valores de los inputs
   profileName.textContent = nameInput.value;
   profileDescription.textContent = descriptionInput.value;
-
-  // 3. Cerrar el modal después de guardar
   closeModal(editProfileModal);
 }
 
-// Conectar el handler al evento submit del formulario
 profileForm.addEventListener("submit", handleProfileFormSubmit);
+
+// --- Lógica del popup "Agregar tarjeta" ---
+
+// Abrir popup de nueva tarjeta
+addCardButton.addEventListener("click", function () {
+  openModal(newCardPopup);
+});
+
+// Cerrar popup de nueva tarjeta
+closeNewCardButton.addEventListener("click", function () {
+  closeModal(newCardPopup);
+});
+
+// Crear nueva tarjeta desde el formulario
+function handleCardFormSubmit(evt) {
+  evt.preventDefault();
+
+  const name = cardNameInput.value;
+  const link = cardLinkInput.value;
+
+  renderCard(name, link, cardsContainer);
+  newCardForm.reset();
+  closeModal(newCardPopup);
+}
+
+newCardForm.addEventListener("submit", handleCardFormSubmit);
+
+// --- Lógica del popup de imagen grande ---
+
+closeImagePopupButton.addEventListener("click", function () {
+  closeModal(imagePopup);
+});
