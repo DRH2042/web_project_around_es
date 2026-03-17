@@ -221,10 +221,10 @@ function showInputError(formElement, inputElement) {
   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
 
   if (!inputElement.validity.valid) {
-    inputElement.classList.add("popup__input_type_error"); // 👈 agrega rojo
+    inputElement.classList.add("popup__input_type_error"); // agrega rojo
     errorElement.textContent = inputElement.validationMessage;
   } else {
-    inputElement.classList.remove("popup__input_type_error"); // 👈 quita rojo
+    inputElement.classList.remove("popup__input_type_error"); // quita rojo
     errorElement.textContent = "";
   }
 }
