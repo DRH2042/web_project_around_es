@@ -50,15 +50,35 @@ const descriptionInput = editProfileModal.querySelector(
 );
 const profileForm = editProfileModal.querySelector(".popup__form");
 
+// -- PROBANDO Validation Message “Por favor, rellena este campo.”--
+const profileNameInput = profileForm.querySelector("#profile-name");
+
+setProfileInputListener(profileNameInput);
+
+const profileDescriptionInput = profileForm.querySelector(
+  "#profile-description"
+);
+
+setProfileInputListener(profileDescriptionInput);
+
 // --- Popup "Agregar tarjeta" ---
 const addCardButton = document.querySelector(".profile__add-button");
 const newCardPopup = document.querySelector("#new-card-popup");
 const closeNewCardButton = newCardPopup.querySelector(".popup__close");
 const newCardForm = newCardPopup.querySelector("#new-card-form");
-const cardNameInput = newCardPopup.querySelector(
-  ".popup__input_type_card-name"
-);
-const cardLinkInput = newCardPopup.querySelector(".popup__input_type_url");
+const placeTitleInput = newCardForm.querySelector("#place-title");
+const placeLinkInput = newCardForm.querySelector("#place-link");
+
+placeTitleInput.addEventListener("input", () => {
+  showInputError(newCardForm, placeTitleInput);
+  toggleNewCardButtonState();
+});
+
+placeLinkInput.addEventListener("input", () => {
+  placeLinkInput.checkValidity();
+  showInputError(newCardForm, placeLinkInput);
+  toggleNewCardButtonState();
+});
 
 // --- Popup de imagen grande ---
 const imagePopup = document.querySelector("#image-popup");
@@ -67,21 +87,35 @@ const imagePopupCaption = imagePopup.querySelector(".popup__caption");
 const closeImagePopupButton = imagePopup.querySelector(".popup__close");
 
 // --- Funciones genéricas para popups ---
+
 function openModal(modal) {
   modal.classList.add("popup_is-opened");
+  document.addEventListener("keydown", closeByEsc);
 }
 
 function closeModal(modal) {
   modal.classList.remove("popup_is-opened");
+  document.removeEventListener("keydown", closeByEsc);
+}
+function closeByOverlay(evt) {
+  if (evt.target === evt.currentTarget) {
+    closeModal(evt.currentTarget);
+  }
+}
+
+function closeByEsc(evt) {
+  if (evt.key === "Escape") {
+    const openedPopup = document.querySelector(".popup_is-opened");
+    if (openedPopup) {
+      closeModal(openedPopup);
+    }
+  }
 }
 
 // --- Funciones relacionadas con tarjetas ---
 
 // Crea una tarjeta a partir de name y link
-function getCardElement(
-  name = "Sin título",
-  link = "./images/placeholder.jpg"
-) {
+function getCardElement(name, link) {
   const cardElement = cardTemplate.cloneNode(true);
 
   const cardImage = cardElement.querySelector(".card__image");
@@ -131,6 +165,7 @@ initialCards.forEach((card) => {
 editProfileButton.addEventListener("click", function () {
   nameInput.value = profileName.textContent;
   descriptionInput.value = profileDescription.textContent;
+  toggleProfileButtonState();
   openModal(editProfileModal);
 });
 
@@ -153,6 +188,7 @@ profileForm.addEventListener("submit", handleProfileFormSubmit);
 
 // Abrir popup de nueva tarjeta
 addCardButton.addEventListener("click", function () {
+  toggleNewCardButtonState();
   openModal(newCardPopup);
 });
 
@@ -165,8 +201,8 @@ closeNewCardButton.addEventListener("click", function () {
 function handleCardFormSubmit(evt) {
   evt.preventDefault();
 
-  const name = cardNameInput.value;
-  const link = cardLinkInput.value;
+  const name = placeTitleInput.value;
+  const link = placeLinkInput.value;
 
   renderCard(name, link, cardsContainer);
   newCardForm.reset();
@@ -179,4 +215,51 @@ newCardForm.addEventListener("submit", handleCardFormSubmit);
 
 closeImagePopupButton.addEventListener("click", function () {
   closeModal(imagePopup);
+});
+
+function showInputError(formElement, inputElement) {
+  const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
+
+  if (!inputElement.validity.valid) {
+    inputElement.classList.add("popup__input_type_error"); // 👈 agrega rojo
+    errorElement.textContent = inputElement.validationMessage;
+  } else {
+    inputElement.classList.remove("popup__input_type_error"); // 👈 quita rojo
+    errorElement.textContent = "";
+  }
+}
+
+function toggleProfileButtonState() {
+  const saveButton = profileForm.querySelector(".popup__button");
+
+  if (!profileForm.checkValidity()) {
+    saveButton.disabled = true;
+    saveButton.classList.add("popup__button_disabled");
+  } else {
+    saveButton.disabled = false;
+    saveButton.classList.remove("popup__button_disabled");
+  }
+}
+
+function toggleNewCardButtonState() {
+  const createButton = newCardForm.querySelector(".popup__button");
+
+  if (!newCardForm.checkValidity()) {
+    createButton.disabled = true;
+    createButton.classList.add("popup__button_disabled");
+  } else {
+    createButton.disabled = false;
+    createButton.classList.remove("popup__button_disabled");
+  }
+}
+
+function setProfileInputListener(inputElement) {
+  inputElement.addEventListener("input", () => {
+    showInputError(profileForm, inputElement);
+    toggleProfileButtonState();
+  });
+}
+
+[editProfileModal, newCardPopup, imagePopup].forEach((popup) => {
+  popup.addEventListener("mousedown", closeByOverlay);
 });
