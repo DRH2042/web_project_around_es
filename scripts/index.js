@@ -1,4 +1,8 @@
 // scripts/index.js
+import PopupWithForm from "./popupWithForm.js";
+import UserInfo from "./userInfo.js";
+import PopupWithImage from "./popupWithImage.js";
+import Section from "./section.js";
 import { Card } from "./card.js";
 import { FormValidator } from "./formValidator.js";
 import { validationConfig } from "./utils.js";
@@ -33,16 +37,12 @@ const initialCards = [
 
 console.log("scripts/index.js conectado");
 
-// --- Selección general de tarjetas ---
-const cardsContainer = document.querySelector(".cards__list");
-
 // --- Elementos del perfil y popup "Editar perfil" ---
 const profileName = document.querySelector(".profile__title");
 const profileDescription = document.querySelector(".profile__description");
 
 const editProfileButton = document.querySelector(".profile__edit-button");
 const editProfileModal = document.querySelector("#edit-popup");
-const closeEditProfileButton = editProfileModal.querySelector(".popup__close");
 
 const nameInput = editProfileModal.querySelector(".popup__input_type_name");
 const descriptionInput = editProfileModal.querySelector(
@@ -50,10 +50,14 @@ const descriptionInput = editProfileModal.querySelector(
 );
 const profileForm = editProfileModal.querySelector(".popup__form");
 
+const userInfo = new UserInfo({
+  nameSelector: ".profile__title",
+  descriptionSelector: ".profile__description",
+});
+
 // --- Popup "Agregar tarjeta" ---
 const addCardButton = document.querySelector(".profile__add-button");
 const newCardPopup = document.querySelector("#new-card-popup");
-const closeNewCardButton = newCardPopup.querySelector(".popup__close");
 const newCardForm = newCardPopup.querySelector("#new-card-form");
 const placeTitleInput = newCardForm.querySelector("#place-title");
 const placeLinkInput = newCardForm.querySelector("#place-link");
@@ -66,44 +70,14 @@ profileFormValidator.setEventListeners();
 newCardFormValidator.setEventListeners();
 
 // --- Popup de imagen grande ---
-const imagePopup = document.querySelector("#image-popup");
-const imagePopupImage = imagePopup.querySelector(".popup__image");
-const imagePopupCaption = imagePopup.querySelector(".popup__caption");
-const closeImagePopupButton = imagePopup.querySelector(".popup__close");
 
-// --- Funciones genéricas para popups ---
-
-function openModal(modal) {
-  modal.classList.add("popup_is-opened");
-  document.addEventListener("keydown", closeByEsc);
-}
-
-function closeModal(modal) {
-  modal.classList.remove("popup_is-opened");
-  document.removeEventListener("keydown", closeByEsc);
-}
-function closeByOverlay(evt) {
-  if (evt.target === evt.currentTarget) {
-    closeModal(evt.currentTarget);
-  }
-}
-
-function closeByEsc(evt) {
-  if (evt.key === "Escape") {
-    const openedPopup = document.querySelector(".popup_is-opened");
-    if (openedPopup) {
-      closeModal(openedPopup);
-    }
-  }
-}
+const popupWithImage = new PopupWithImage("#image-popup");
+popupWithImage.setEventListeners();
 
 // --- Funciones relacionadas con tarjetas ---
 
 function handleCardClick(name, link) {
-  imagePopupImage.src = link;
-  imagePopupImage.alt = name;
-  imagePopupCaption.textContent = name;
-  openModal(imagePopup);
+  popupWithImage.open(name, link);
 }
 
 function createCard(cardData) {
@@ -111,70 +85,61 @@ function createCard(cardData) {
   return card.generateCard();
 }
 
-initialCards.forEach((cardData) => {
-  const cardElement = createCard(cardData);
-  cardsContainer.prepend(cardElement);
-});
+const cardSection = new Section(
+  {
+    items: initialCards,
+    renderer: (cardData) => {
+      const cardElement = createCard(cardData);
+      cardSection.addItem(cardElement);
+    },
+  },
+  ".cards__list"
+);
+
+cardSection.renderItems();
 
 // --- Lógica del popup "Editar perfil" ---
+const editProfilePopup = new PopupWithForm("#edit-popup", (inputValues) => {
+  userInfo.setUserInfo({
+    name: inputValues.name,
+    description: inputValues.description,
+  });
+
+  editProfilePopup.close();
+});
+
+editProfilePopup.setEventListeners();
 
 // Abrir popup con los datos actuales
 editProfileButton.addEventListener("click", function () {
-  nameInput.value = profileName.textContent;
-  descriptionInput.value = profileDescription.textContent;
-  openModal(editProfileModal);
-});
-// Cerrar popup de perfil
-closeEditProfileButton.addEventListener("click", function () {
-  closeModal(editProfileModal);
+  const currentUserInfo = userInfo.getUserInfo();
+
+  nameInput.value = currentUserInfo.name;
+  descriptionInput.value = currentUserInfo.description;
+
+  profileFormValidator.resetValidation();
+
+  editProfilePopup.open();
 });
 
-// Guardar cambios del perfil
-function handleProfileFormSubmit(evt) {
-  evt.preventDefault();
-  profileName.textContent = nameInput.value;
-  profileDescription.textContent = descriptionInput.value;
-  closeModal(editProfileModal);
-}
+const addCardPopup = new PopupWithForm("#new-card-popup", (inputValues) => {
+  const cardData = {
+    name: inputValues["place-name"],
+    link: inputValues.link,
+  };
 
-profileForm.addEventListener("submit", handleProfileFormSubmit);
+  const cardElement = createCard(cardData);
+  cardSection.addItem(cardElement);
+
+  addCardPopup.close();
+});
+
+addCardPopup.setEventListeners();
 
 // --- Lógica del popup "Agregar tarjeta" ---
 
 // Abrir popup de nueva tarjeta
-addCardButton.addEventListener("click", function () {
-  openModal(newCardPopup);
-});
-
-// Cerrar popup de nueva tarjeta
-closeNewCardButton.addEventListener("click", function () {
-  closeModal(newCardPopup);
-});
-
-// Crear nueva tarjeta desde el formulario
-function handleCardFormSubmit(evt) {
-  evt.preventDefault();
-
-  const cardData = {
-    name: placeTitleInput.value,
-    link: placeLinkInput.value,
-  };
-
-  const cardElement = createCard(cardData);
-  cardsContainer.prepend(cardElement);
-
-  newCardForm.reset();
-  closeModal(newCardPopup);
-}
-
-newCardForm.addEventListener("submit", handleCardFormSubmit);
-
-// --- Lógica del popup de imagen grande ---
-
-closeImagePopupButton.addEventListener("click", function () {
-  closeModal(imagePopup);
-});
-
-[editProfileModal, newCardPopup, imagePopup].forEach((popup) => {
-  popup.addEventListener("mousedown", closeByOverlay);
+addCardButton.addEventListener("click", () => {
+  newCardFormValidator.resetValidation();
+  addCardPopup.open();
 });

@@ -1,10 +1,10 @@
-# Project Around The U.S. – Sprint 10
+# Project Around The U.S. – Sprint 11
 
 ## Descripción
 
-Este proyecto es una página interactiva donde los usuarios pueden editar su perfil, agregar nuevas tarjetas con imágenes y visualizar imágenes en un popup.
+Este proyecto es una aplicación web interactiva donde los usuarios pueden editar su perfil, agregar nuevas tarjetas con imágenes y visualizar imágenes en tamaño completo.
 
-En esta etapa del proyecto se reorganizó el código JavaScript utilizando clases y módulos, con el objetivo de hacer la estructura más clara, reutilizable y escalable.
+En esta versión (Proyecto 11), se realizó una refactorización completa del código utilizando Programación Orientada a Objetos (POO) en JavaScript, separando la lógica en múltiples clases para mejorar la escalabilidad, reutilización y mantenimiento del código.
 
 ## Funcionalidad
 
@@ -19,24 +19,22 @@ En esta etapa del proyecto se reorganizó el código JavaScript utilizando clase
 
 - HTML5
 - CSS3
-- JavaScript
-- Programación orientada a objetos (OOP)
-- Clases JavaScript
-- Módulos ES6 (import y export)
+- JavaScript (ES6 Modules)
+- Programación Orientada a Objetos (POO)
+- Encapsulación de lógica
+- Herencia (Popup → PopupWithImage / PopupWithForm)
+- Separación de responsabilidades
+- Acoplamiento débil mediante callbacks
+- Manipulación del DOM con clases
 - Validación de formularios
-- Manipulación del DOM
 
-## Mejoras realizadas en Sprint 10
+## Mejoras realizadas en Sprint 11
 
-- Se creó la clase `Card` para generar tarjetas de forma dinámica.
-- Se creó la clase `FormValidator` para manejar la validación de formularios.
-- Se dividió el código JavaScript en módulos.
-- Se conectaron los scripts como módulos en `index.html`.
-- Se mejoró la organización general del proyecto.
-
-## Cómo ejecutar el proyecto
-
-Abre el archivo `index.html` con la extensión Live Server en VS Code para visualizar correctamente los módulos de JavaScript.
+- Refactorización completa a clases
+- Eliminación de funciones globales duplicadas
+- Centralización del manejo de popups
+- Uso de clases reutilizables y escalables
+- Código más limpio y organizado
 
 ## Autor
 
