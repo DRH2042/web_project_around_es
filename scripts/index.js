@@ -1,10 +1,10 @@
 // scripts/index.js
-import PopupWithForm from "./popupWithForm.js";
-import UserInfo from "./userInfo.js";
-import PopupWithImage from "./popupWithImage.js";
-import Section from "./section.js";
-import { Card } from "./card.js";
-import { FormValidator } from "./formValidator.js";
+import PopupWithForm from "./PopupWithForm.js";
+import UserInfo from "./UserInfo.js";
+import PopupWithImage from "./PopupWithImage.js";
+import Section from "./Section.js";
+import { Card } from "./Card.js";
+import { FormValidator } from "./FormValidator.js";
 import { validationConfig } from "./utils.js";
 
 // --- Tarjetas iniciales ---
