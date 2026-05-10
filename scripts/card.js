@@ -1,9 +1,22 @@
 export class Card {
-  constructor(data, cardSelector, handleCardClick) {
+  constructor(
+    data,
+    cardSelector,
+    handleCardClick,
+    handleLikeClick,
+    handleDeleteClick,
+    currentUserId
+  ) {
     this._name = data.name;
     this._link = data.link;
+    this._cardId = data._id;
+    this._isLiked = data.isLiked;
+    this._ownerId = data.owner;
+    this._currentUserId = currentUserId;
     this._cardSelector = cardSelector;
     this._handleCardClick = handleCardClick;
+    this._handleLikeClick = handleLikeClick;
+    this._handleDeleteClick = handleDeleteClick;
   }
 
   _getTemplate() {
@@ -15,11 +28,7 @@ export class Card {
     return cardElement;
   }
 
-  _handleLikeIcon() {
-    this._likeButton.classList.toggle("card__like-button_is-active");
-  }
-
-  _handleDeleteCard() {
+  deleteCard() {
     this._element.remove();
     this._element = null;
   }
@@ -30,16 +39,36 @@ export class Card {
 
   _setEventListeners() {
     this._likeButton.addEventListener("click", () => {
-      this._handleLikeIcon();
+      this._handleLikeClick(this);
     });
 
-    this._deleteButton.addEventListener("click", () => {
-      this._handleDeleteCard();
-    });
+    if (this._deleteButton) {
+      this._deleteButton.addEventListener("click", () => {
+        this._handleDeleteClick(this);
+      });
+    }
 
     this._cardImage.addEventListener("click", () => {
       this._handleOpenImage();
     });
+  }
+
+  isLiked() {
+    return this._isLiked;
+  }
+
+  getCardId() {
+    return this._cardId;
+  }
+
+  setLikeStatus(isLiked) {
+    this._isLiked = isLiked;
+
+    if (this._isLiked) {
+      this._likeButton.classList.add("card__like-button_is-active");
+    } else {
+      this._likeButton.classList.remove("card__like-button_is-active");
+    }
   }
 
   generateCard() {
@@ -49,9 +78,18 @@ export class Card {
     this._cardImage = this._element.querySelector(".card__image");
     this._cardTitle = this._element.querySelector(".card__title");
 
+    if (this._ownerId !== this._currentUserId) {
+      this._deleteButton.remove();
+      this._deleteButton = null;
+    }
+
     this._cardTitle.textContent = this._name;
     this._cardImage.src = this._link;
     this._cardImage.alt = this._name;
+
+    if (this._isLiked) {
+      this._likeButton.classList.add("card__like-button_is-active");
+    }
 
     this._setEventListeners();
 

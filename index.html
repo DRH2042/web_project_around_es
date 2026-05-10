@@ -132,6 +132,42 @@
           </form>
         </div>
       </div>
+      <div class="popup" id="avatar-popup">
+        <div class="popup__content">
+          <button
+            aria-label="Cerrar ventana emergente"
+            class="popup__close"
+            type="button"
+          ></button>
+          <h3 class="popup__title">Cambiar foto de perfil</h3>
+          <form class="popup__form" id="avatar-form">
+            <input
+              id="avatar-link"
+              class="popup__input popup__input_type_avatar"
+              name="avatar"
+              placeholder="Enlace a la imagen"
+              required
+              type="url"
+            />
+            <span class="popup__error avatar-link-error"></span>
+
+            <button class="button popup__button" type="submit">Guardar</button>
+          </form>
+        </div>
+      </div>
+      <div class="popup" id="delete-card-popup">
+        <div class="popup__content">
+          <button
+            aria-label="Cerrar ventana emergente"
+            class="popup__close"
+            type="button"
+          ></button>
+          <h3 class="popup__title">¿Estás seguro?</h3>
+          <form class="popup__form" id="delete-card-form">
+            <button class="button popup__button" type="submit">Sí</button>
+          </form>
+        </div>
+      </div>
       <div class="popup" id="image-popup">
         <div class="popup__content popup__content_content_image">
           <button
